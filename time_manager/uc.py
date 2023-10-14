@@ -15,7 +15,7 @@ def translate_time_ns(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time / 6.048e+14, False)
     elif unit == MONTH: return t_round(time / 2.628e+15, False)
     elif unit == YEAR: return t_round(time / 3.154e+16, False)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time_mis(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate microseconds to other unit."""
@@ -29,7 +29,7 @@ def translate_time_mis(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time / 6.048e+11, False)
     elif unit == MONTH: return t_round(time / 2.628e+12, False)
     elif unit == YEAR: return t_round(time / 3.154e+13, False)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time_ms(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate milliseconds to other unit."""
@@ -43,7 +43,7 @@ def translate_time_ms(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time / 6.048e+8, False)
     elif unit == MONTH: return t_round(time / 2.628e+9, False)
     elif unit == YEAR: return t_round(time / 3.154e+10, False)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time_s(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate seconds to other unit."""
@@ -57,7 +57,7 @@ def translate_time_s(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time / 604800, False)
     elif unit == MONTH: return t_round(time / 2.628e+6, False)
     elif unit == YEAR: return t_round(time / 3.154e+7, False)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time_m(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate minutes to other unit."""
@@ -71,7 +71,7 @@ def translate_time_m(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time / 10080, False)
     elif unit == MONTH: return t_round(time / 43800, False)
     elif unit == YEAR: return t_round(time / 525600, False)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time_h(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate hour to other unit."""
@@ -85,7 +85,7 @@ def translate_time_h(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time / 168, False)
     elif unit == MONTH: return t_round(time / 730, False)
     elif unit == YEAR: return t_round(time / 8760, False)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time_d(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate day to other unit."""
@@ -99,7 +99,7 @@ def translate_time_d(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time / 7, False)
     elif unit == MONTH: return t_round(time / 30.417, False)
     elif unit == YEAR: return t_round(time / 365, False)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time_w(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate week to other unit."""
@@ -113,7 +113,7 @@ def translate_time_w(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time)
     elif unit == MONTH: return t_round(time / 4.345, False)
     elif unit == YEAR: return t_round(time / 52.143, False)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time_mo(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate month to other unit."""
@@ -127,7 +127,7 @@ def translate_time_mo(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time * 4.345, False)
     elif unit == MONTH: return t_round(time)
     elif unit == YEAR: return t_round(time / 12, False)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time_y(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate year to other unit."""
@@ -141,7 +141,7 @@ def translate_time_y(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == WEEK: return t_round(time * 52.143, False)
     elif unit == MONTH: return t_round(time * 12, False)
     elif unit == YEAR: return t_round(time)
-    else: return t_round(time)
+    else: return t_round(time, False)
 
 def translate_time(time: float, time_unit: TimeUnit, convert_to: TimeUnit) -> Union[int, float]:
     """Translate one unit to another."""
@@ -155,4 +155,4 @@ def translate_time(time: float, time_unit: TimeUnit, convert_to: TimeUnit) -> Un
     elif time_unit == DAY: return translate_time_d(time, convert_to)
     elif time_unit == WEEK: return translate_time_w(time, convert_to)
     elif time_unit == YEAR: return translate_time_y(time, convert_to)
-    else: return t_round(time)
+    else: return t_round(time, False)
