@@ -5,7 +5,7 @@ from . import t_round, Union, TimeUnit, NANOSECOND, MICROSECOND, MILLISECOND, SE
 
 def translate_time_ns(time: float, unit: TimeUnit) -> Union[int, float]:
     """Translate nanoseconds to other unit."""
-    if unit == NANOSECOND: return t_round(time)
+    if unit == NANOSECOND: return t_round(time, False)
     elif unit == MICROSECOND: return t_round(time / 1000, False)
     elif unit == MILLISECOND: return t_round(time / 1e+6, False)
     elif unit == SECOND: return t_round(time / 1e+9, False)
@@ -145,7 +145,7 @@ def translate_time_y(time: float, unit: TimeUnit) -> Union[int, float]:
 
 def translate_time(time: float, time_unit: TimeUnit, convert_to: TimeUnit) -> Union[int, float]:
     """Translate one unit to another."""
-    if time_unit == convert_to: return t_round(time)
+    if time_unit == convert_to: return t_round(time, False)
     elif time_unit == NANOSECOND: return translate_time_ns(time, convert_to)
     elif time_unit == MICROSECOND: return translate_time_mis(time, convert_to)
     elif time_unit == MILLISECOND: return translate_time_ms(time, convert_to)
