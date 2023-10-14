@@ -1,5 +1,6 @@
 <h1 align="center">Time_Manager.</h1>
 <p align="center">Improves work with time.</p>
+<p align="center"><code>pip install pytime_manager</code></p>
 
 ```python
 # Time Manager.
