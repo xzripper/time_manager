@@ -7,7 +7,7 @@ from threading import Thread
 from typing import Union, Callable
 
 
-TM_VERSION = 1.1
+TM_VERSION = 1.2
 
 TimeUnit = int
 
