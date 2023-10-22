@@ -7,7 +7,7 @@ from threading import Thread
 from typing import Union, Callable
 
 
-TM_VERSION = 1.2
+TM_VERSION = 1.3
 
 TimeUnit = int
 
@@ -26,6 +26,17 @@ YEAR: TimeUnit = 10
 
 time_counter: Callable[[], float] = perf_counter
 time_counter_ns: Callable[[], int] = perf_counter_ns
+
+class WhileState:
+    state: bool = True
+
+    def restart(self) -> None:
+        """Restart state."""
+        self.state = True
+
+    def stop(self) -> None:
+        """Stop while loop."""
+        self.state = False
 
 def time_thread(time_process: TimeProcess, daemon: bool=False) -> None:
     """Run time process in a thread."""
@@ -95,7 +106,7 @@ def do(callable: Callable, delay: float, times: int) -> TimeProcess:
     return _process
 
 def do_for(callable: Callable, do_seconds: float) -> TimeProcess:
-    """Do callable for some time."""
+    """Call callable for some time."""
     def _process():
         passed = 0
 
@@ -107,6 +118,24 @@ def do_for(callable: Callable, do_seconds: float) -> TimeProcess:
             passed += perf_counter() - before_callable
 
     return _process
+
+def do_inf(callable: Callable) -> TimeProcess:
+    """Call callable infinity times."""
+    def inf_proc():
+        while True:
+            callable()
+
+    return inf_proc
+
+def do_while(callable: Callable, state: WhileState, delay: float=0.0) -> TimeProcess:
+    """Call callable while state is true."""
+    def process():
+        while state.state:
+            callable()
+
+            wait(delay)
+
+    return process
 
 def code_exec_time(callable: Callable, ns: bool=False) -> float:
     """Get code execution time."""
