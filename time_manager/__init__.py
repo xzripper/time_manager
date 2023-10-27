@@ -7,7 +7,7 @@ from threading import Thread
 from typing import Union, Callable
 
 
-TM_VERSION = 1.4
+TM_VERSION = 1.5
 
 TimeUnit = int
 
@@ -38,9 +38,23 @@ class WhileState:
         """Stop while loop."""
         self.state = False
 
+threads: dict[str, list[Thread]] = {'main': []}
+
 def time_thread(time_process: TimeProcess, daemon: bool=False) -> None:
     """Run time process in a thread."""
     Thread(target=time_process, daemon=daemon).start()
+
+def blocking_time_thread(time_process: TimeProcess, daemon: bool=False, thread: str='main') -> None:
+    """Run time process in a blocking thread. If any thread running in thread queue, this thread will not be added to queue and executed."""
+    if thread not in threads.keys():
+        threads[thread] = []
+
+    if all(not _thread.is_alive() for _thread in threads[thread]):
+        thread_o = Thread(target=time_process, daemon=daemon)
+
+        thread_o.start()
+
+        threads[thread].append(thread_o)
 
 def do_process(time_process: TimeProcess) -> None:
     """Run time process without thread."""
@@ -88,11 +102,13 @@ def do_for(callable: Callable, do_seconds: float) -> TimeProcess:
 
     return _process
 
-def do_inf(callable: Callable) -> TimeProcess:
+def do_inf(callable: Callable, delay: float=0.0) -> TimeProcess:
     """Call callable infinity times."""
     def inf_proc():
         while True:
             callable()
+
+            wait(delay)
 
     return inf_proc
 
