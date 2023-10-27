@@ -48,6 +48,15 @@ time_thread(
 
 # Print message and wait three seconds.
 do_and_wait(lambda: print('Hi!'), 3)
+
+# Blocking Time Thread VS Time Thread.
+blocking_time_thread(do(lambda: print('Hello 1'), 1, 5))
+
+print('Main thread is unblocked but still unable to call blocking another time thread.')
+
+blocking_time_thread(do(lambda: print('Hello 2 (Not going to print because its blocked for me.)'), 1, 5))
+
+time_thread(do(lambda: print('I\'m going to be printed because i\'m free time thread.'), 1, 5))
 ```
 
 Adds more than 10 functions to improve work with time, and a lot more things.
