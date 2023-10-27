@@ -50,11 +50,13 @@ time_thread(
 do_and_wait(lambda: print('Hi!'), 3)
 
 # Blocking Time Thread VS Time Thread.
-blocking_time_thread(do(lambda: print('Hello 1'), 1, 5))
+blocking_time_thread(do(lambda: print('Hello 1'), 1, 5)) # Uses virtual 'main' thread.
 
-print('Main thread is unblocked but still unable to call blocking another time thread.')
+print('Application thread is unblocked but still unable to call blocking another time thread.')
 
-blocking_time_thread(do(lambda: print('Hello 2 (Not going to print because its blocked for me.)'), 1, 5))
+blocking_time_thread(do(lambda: print('Hello 2 (Not going to print because its blocked for me)'), 1, 5)) # Uses virtual 'main' thread.
+
+blocking_time_thread(do(lambda: print('Hello 3 (I\'m from another thread so I don\'t care.)'), 1, 5), thread='other_thread') # Uses virtual 'other_thread' thread.
 
 time_thread(do(lambda: print('I\'m going to be printed because i\'m free time thread.'), 1, 5))
 ```
