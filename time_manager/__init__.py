@@ -7,7 +7,7 @@ from threading import Thread
 from typing import Union, Callable
 
 
-TM_VERSION = 1.3
+TM_VERSION = 1.4
 
 TimeUnit = int
 
@@ -45,37 +45,6 @@ def time_thread(time_process: TimeProcess, daemon: bool=False) -> None:
 def do_process(time_process: TimeProcess) -> None:
     """Run time process without thread."""
     time_process()
-
-def t_round(number: float, round_float: bool=True) -> int:
-    """
-    Round number.
-
-    `round_float` is True:
-    ```
-    t_round(5.75) # => 5
-    t_round(1.0) # => 1
-    ```
-
-    `round_float` is False:
-    ```
-    t_round(5.75) # => 5.75
-    t_round(1.0) # => 1
-
-    t_round(456.4859) # => 456.4859
-    t_round(456.0) # => 456
-    """
-    if round_float:
-        return round(number)
-
-    else:
-        digits = str(number).split('.')
-
-        if len(digits) > 1:
-            if int(digits[1]) == 0:
-                return round(number)
-
-        else:
-            return number
 
 def wait(delay: float) -> None:
     """Wait (sleep)."""
