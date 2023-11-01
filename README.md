@@ -65,7 +65,7 @@ time_thread(
  do_every(
     lambda: print('Hello!'),
 
-    [(2, SECOND), (5, MILLISECOND)], # 2.5s [example: [(1, DAY), (12, HOUR)] => 1 day, 12 hours].
+    [(1, MINUTE), (30, SECOND), (2.5, SECOND)], # 1min 32.5s (92.5s) [example: [(1, DAY), (12, HOUR)] => 1 day, 12 hours].
 
     False, # Once?
 
