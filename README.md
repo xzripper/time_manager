@@ -59,6 +59,19 @@ blocking_time_thread(do(lambda: print('Hello 2 (Not going to print because its b
 blocking_time_thread(do(lambda: print('Hello 3 (I\'m from another thread so I don\'t care.)'), 1, 5), thread='other_thread') # Uses virtual 'other_thread' thread.
 
 time_thread(do(lambda: print('I\'m going to be printed because i\'m free time thread.'), 1, 5))
+
+# Schedule function calling.
+time_thread(
+ do_every(
+    lambda: print('Hello!'),
+
+    [(2, SECOND), (5, MILLISECOND)], # 2.5s [example: [(1, DAY), (12, HOUR)] => 1 day, 12 hours].
+
+    False, # Once?
+
+    translate_time # Needed for translating time. (import it from pytime_manager.uc).
+ )
+)
 ```
 
 Adds more than 10 functions to improve work with time, and a lot more things.
