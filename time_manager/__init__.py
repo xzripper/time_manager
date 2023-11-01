@@ -7,11 +7,15 @@ from threading import Thread
 from typing import Union, Callable
 
 
-TM_VERSION = 1.5
+TM_VERSION = 1.6
 
 TimeUnit = int
 
 TimeProcess = Callable[[], None]
+
+Threads = dict[str, list[Thread]]
+
+Date = list[tuple[int, TimeUnit]]
 
 NANOSECOND: TimeUnit = 1
 MICROSECOND: TimeUnit = 2
@@ -23,6 +27,8 @@ DAY: TimeUnit = 7
 WEEK: TimeUnit = 8
 MONTH: TimeUnit = 9
 YEAR: TimeUnit = 10
+
+MAIN_THREAD: str = 'main'
 
 time_counter: Callable[[], float] = perf_counter
 time_counter_ns: Callable[[], int] = perf_counter_ns
@@ -38,13 +44,13 @@ class WhileState:
         """Stop while loop."""
         self.state = False
 
-threads: dict[str, list[Thread]] = {'main': []}
+threads: Threads = {'main': []}
 
 def time_thread(time_process: TimeProcess, daemon: bool=False) -> None:
     """Run time process in a thread."""
     Thread(target=time_process, daemon=daemon).start()
 
-def blocking_time_thread(time_process: TimeProcess, daemon: bool=False, thread: str='main') -> None:
+def blocking_time_thread(time_process: TimeProcess, daemon: bool=False, thread: str=MAIN_THREAD) -> None:
     """Run time process in a blocking thread. If any thread running in thread queue, this thread will not be added to queue and executed."""
     if thread not in threads.keys():
         threads[thread] = []
@@ -119,6 +125,22 @@ def do_while(callable: Callable, state: WhileState, delay: float=0.0) -> TimePro
             callable()
 
             wait(delay)
+
+    return process
+
+def do_every(callable: Callable, delay: Date, once: bool=False, _time_translate: Callable='NON-OPTIONAL') -> TimeProcess:
+    """Call callable after every delay, stop if 'once' is True."""
+    if isinstance(_time_translate, str):
+        return lambda: print('_time_translate is not specified [do_every].')
+
+    def process():
+        while True:
+            wait(sum([_time_translate(time[0], time[1], SECOND) for time in delay]))
+
+            callable()
+
+            if once:
+                break
 
     return process
 
