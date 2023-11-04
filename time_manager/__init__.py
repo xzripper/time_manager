@@ -1,6 +1,6 @@
 """Time Manager for Python."""
 
-from time import sleep, perf_counter, perf_counter_ns, timezone as _timezone, time as _utc_time
+from time import sleep, perf_counter, perf_counter_ns, timezone as _timezone
 
 from datetime import datetime
 
@@ -195,9 +195,9 @@ def code_exec_time(callable: Callable, ns: bool=False) -> float:
 
         return perf_counter() - start
 
-def utc() -> int:
+def utc(ms: bool=False) -> int:
     """Get UTC."""
-    return _utc_time()
+    return int(datetime.now(getattr(__import__('datetime'), 'timezone').utc).timestamp() * (1000 if ms else 1))
 
 def now(timezone: str=None) -> datetime:
     """Get current date and time (datetime)."""
@@ -207,10 +207,10 @@ def now_time(timezone: str=None) -> datetime:
     """Get current time (datetime)."""
     return now(timezone).time()
 
-def dformat(time: datetime, _format: str) -> datetime:
+def dformat(time: datetime=None, _format: str='') -> datetime:
     """Format datetime."""
-    return datetime.strptime(datetime.strftime(time, _format), _format)
+    return datetime.strptime(datetime.strftime(time if time else now(), _format), _format)
 
-def sformat(time: datetime, _format: str) -> str:
+def sformat(time: datetime=None, _format: str='') -> str:
     """Format datetime and get formated date as string."""
-    return datetime.strftime(time, _format)
+    return datetime.strftime(time if time else now(), _format)
