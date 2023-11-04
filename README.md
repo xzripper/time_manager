@@ -4,8 +4,8 @@
 
 ```python
 # Time Manager.
-from time_manager import *
-from time_manager.uc import *
+from pytime_manager import *
+from pytime_manager.uc import *
 
 
 # Translate one year into days.
@@ -14,11 +14,14 @@ print(translate_time(1, YEAR, DAY)) # => 365
 # Or...
 print(translate_time_y(1, DAY)) # => 365
 
+# Make sure to add this line so everything will work!
+set_translate_time(translate_time) # translate_time is located in time_manager.uc.
+
 # Print 'Hello!' after three seconds.
 time_thread(
     call_after(
         lambda: print('Hello!'),
-        3
+        3 # or Delay((3, SECOND))
     )
 )
 
@@ -27,7 +30,7 @@ time_thread(
     call_after2(
         lambda: print('Hello!'),
         lambda: print('Bye!'),
-        3
+        3 # or Delay((3, SECOND))
     )
 )
 
@@ -35,7 +38,7 @@ time_thread(
 time_thread(
     do_for(
         lambda: print('Print me for three seconds.'),
-        3
+        3 # or Delay((3, SECOND))
     )
 )
 
@@ -65,16 +68,14 @@ time_thread(
  do_every(
     lambda: print('Hello!'),
 
-    [(1, MINUTE), (30, SECOND), (2.5, SECOND)], # 1min 32.5s (92.5s) [example: [(1, DAY), (12, HOUR)] => 1 day, 12 hours].
+    Delay((1, MINUTE), (30, SECOND), (2.5, SECOND)), # 1min 32.5s (92.5s) [example: [(1, DAY), (12, HOUR)] => 1 day, 12 hours] : OR : 60 + 30 + 2.5 = 32.5s (32.5 [float]).
 
-    False, # Once?
-
-    translate_time # Needed for translating time. (import it from pytime_manager.uc).
+    False # Once?
  )
 )
 ```
 
-Adds more than 10 functions to improve work with time, and a lot more things.
+Adds more than 15 functions to improve work with time, and a lot more things.
 
 <b>TimeManager <a href="https://github.com/xzripper/time_manager/blob/main/time_manager/__init__.py">Cheatsheet</a>.<br>
 UnitConverter <a href="https://github.com/xzripper/time_manager/blob/main/time_manager/uc.py">Cheatsheet</a>.</b>
