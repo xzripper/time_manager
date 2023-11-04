@@ -1,13 +1,17 @@
 """Time Manager for Python."""
 
-from time import sleep, perf_counter, perf_counter_ns
+from time import sleep, perf_counter, perf_counter_ns, timezone as _timezone, time as _utc_time
+
+from datetime import datetime
+
+from pytz import timezone as _get_timezone
 
 from threading import Thread
 
 from typing import Union, Callable
 
 
-TM_VERSION = 1.6_2
+TM_VERSION = 1.7
 
 TimeUnit = int
 
@@ -15,7 +19,7 @@ TimeProcess = Callable[[], None]
 
 Threads = dict[str, list[Thread]]
 
-Date = list[tuple[int, TimeUnit]]
+DelayT = list[tuple[Union[int, float], TimeUnit]]
 
 NANOSECOND: TimeUnit = 1
 MICROSECOND: TimeUnit = 2
@@ -33,6 +37,18 @@ MAIN_THREAD: str = 'main'
 time_counter: Callable[[], float] = perf_counter
 time_counter_ns: Callable[[], int] = perf_counter_ns
 
+m_time_zone: int = _timezone
+
+m_get_timezone: Callable = _get_timezone
+
+m_translate_time: Callable[[float, TimeUnit, TimeUnit], float] = None
+
+def set_translate_time(_translate_time: Callable) -> None:
+    """Set translate time function."""
+    global m_translate_time
+
+    m_translate_time = _translate_time
+
 class WhileState:
     state: bool = True
 
@@ -44,7 +60,29 @@ class WhileState:
         """Stop while loop."""
         self.state = False
 
-threads: Threads = {'main': []}
+class Delay:
+    delay: DelayT = None
+
+    def __init__(self, *delay: DelayT) -> None:
+        """Create new delay."""
+        self.delay = [*delay]
+
+    def sum(self, to: TimeUnit=SECOND) -> float:
+        """Convert delay to specific time unit."""
+        return sum([m_translate_time(time[0], time[1], to) for time in self.delay])
+
+    @staticmethod
+    def get(delay: 'AdvancedDelayOrSimpleDelay', to: TimeUnit=SECOND) -> float:
+        """Convert delay or just return delay if not advanced delay."""
+        if isinstance(delay, Delay):
+            return delay.sum(to)
+
+        elif isinstance(delay, float) or isinstance(delay, int):
+            return delay
+
+AdvancedDelayOrSimpleDelay = Union[float, Delay]
+
+threads: Threads = {MAIN_THREAD: []}
 
 def time_thread(time_process: TimeProcess, daemon: bool=False) -> None:
     """Run time process in a thread."""
@@ -66,40 +104,40 @@ def do_process(time_process: TimeProcess) -> None:
     """Run time process without thread."""
     time_process()
 
-def wait(delay: float) -> None:
+def wait(delay: AdvancedDelayOrSimpleDelay) -> None:
     """Wait (sleep)."""
-    sleep(delay)
+    sleep(Delay.get(delay))
 
-def do_and_wait(callable: Callable, delay: float) -> None:
+def do_and_wait(callable: Callable, delay: AdvancedDelayOrSimpleDelay) -> None:
     """Call callable and wait."""
     callable()
 
-    wait(delay)
+    wait(Delay.get(delay))
 
-def call_after(callable: Callable, delay: float) -> TimeProcess:
+def call_after(callable: Callable, delay: AdvancedDelayOrSimpleDelay) -> TimeProcess:
     """Call function after delay."""
-    return lambda: [wait(delay), callable()]
+    return lambda: [wait(Delay.get(delay)), callable()]
 
-def call_after2(callable1: Callable, callable2: Callable, delay: float) -> TimeProcess:
+def call_after2(callable1: Callable, callable2: Callable, delay: AdvancedDelayOrSimpleDelay) -> TimeProcess:
     """Call callable1, call callable2 after delay."""
-    return lambda: [callable1(), wait(delay), callable2()]
+    return lambda: [callable1(), wait(Delay.get(delay)), callable2()]
 
-def do(callable: Callable, delay: float, times: int) -> TimeProcess:
+def do(callable: Callable, delay: AdvancedDelayOrSimpleDelay, times: int) -> TimeProcess:
     """Call callable X times."""
     def _process():
         for _ in range(times):
             callable()
 
-            wait(delay)
+            wait(Delay.get(delay))
 
     return _process
 
-def do_for(callable: Callable, do_seconds: float) -> TimeProcess:
+def do_for(callable: Callable, do_seconds: AdvancedDelayOrSimpleDelay) -> TimeProcess:
     """Call callable for some time."""
     def _process():
         passed = 0
 
-        while passed <= do_seconds:
+        while passed <= Delay.get(do_seconds):
             before_callable = perf_counter()
 
             callable()
@@ -108,34 +146,31 @@ def do_for(callable: Callable, do_seconds: float) -> TimeProcess:
 
     return _process
 
-def do_inf(callable: Callable, delay: float=0.0) -> TimeProcess:
+def do_inf(callable: Callable, delay: AdvancedDelayOrSimpleDelay=0.0) -> TimeProcess:
     """Call callable infinity times."""
     def inf_proc():
         while True:
             callable()
 
-            wait(delay)
+            wait(Delay.get(delay))
 
     return inf_proc
 
-def do_while(callable: Callable, state: WhileState, delay: float=0.0) -> TimeProcess:
+def do_while(callable: Callable, state: WhileState, delay: AdvancedDelayOrSimpleDelay=0.0) -> TimeProcess:
     """Call callable while state is true."""
     def process():
         while state.state:
             callable()
 
-            wait(delay)
+            wait(Delay.get(delay))
 
     return process
 
-def do_every(callable: Callable, delay: Date, once: bool=False, _time_translate: Callable='NON-OPTIONAL') -> TimeProcess:
+def do_every(callable: Callable, delay: AdvancedDelayOrSimpleDelay, once: bool=False) -> TimeProcess:
     """Call callable after every delay, stop if 'once' is True."""
-    if isinstance(_time_translate, str):
-        return lambda: print('_time_translate is not specified [do_every].')
-
     def process():
         while True:
-            wait(sum([_time_translate(time[0], time[1], SECOND) for time in delay]))
+            wait(Delay.get(delay))
 
             callable()
 
@@ -159,3 +194,23 @@ def code_exec_time(callable: Callable, ns: bool=False) -> float:
         callable()
 
         return perf_counter() - start
+
+def utc() -> int:
+    """Get UTC."""
+    return _utc_time()
+
+def now(timezone: str=None) -> datetime:
+    """Get current date and time (datetime)."""
+    return datetime.now(m_get_timezone(timezone) if timezone else None)
+
+def now_time(timezone: str=None) -> datetime:
+    """Get current time (datetime)."""
+    return now(timezone).time()
+
+def dformat(time: datetime, _format: str) -> datetime:
+    """Format datetime."""
+    return datetime.strptime(datetime.strftime(time, _format), _format)
+
+def sformat(time: datetime, _format: str) -> str:
+    """Format datetime and get formated date as string."""
+    return datetime.strftime(time, _format)

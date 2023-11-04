@@ -1,9 +1,9 @@
 """Unit Converter."""
 
-from . import Union, TimeUnit, NANOSECOND, MICROSECOND, MILLISECOND, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR, TM_VERSION
+from . import TimeUnit, NANOSECOND, MICROSECOND, MILLISECOND, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR, TM_VERSION
 
 
-def translate_time_ns(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_ns(time: float, unit: TimeUnit) -> float:
     """Translate nanoseconds to other unit."""
     if unit == NANOSECOND: return time
     elif unit == MICROSECOND: return time / 1000
@@ -17,7 +17,7 @@ def translate_time_ns(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time / 3.154e+16
     else: return time
 
-def translate_time_mis(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_mis(time: float, unit: TimeUnit) -> float:
     """Translate microseconds to other unit."""
     if unit == NANOSECOND: return time * 1000
     elif unit == MICROSECOND: return time
@@ -31,7 +31,7 @@ def translate_time_mis(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time / 3.154e+13
     else: return time
 
-def translate_time_ms(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_ms(time: float, unit: TimeUnit) -> float:
     """Translate milliseconds to other unit."""
     if unit == NANOSECOND: return time * 1e+6
     elif unit == MICROSECOND: return time * 1000
@@ -45,7 +45,7 @@ def translate_time_ms(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time / 3.154e+10
     else: return time
 
-def translate_time_s(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_s(time: float, unit: TimeUnit) -> float:
     """Translate seconds to other unit."""
     if unit == NANOSECOND: return time * 1e+9
     elif unit == MICROSECOND: return time * 1e+6
@@ -59,7 +59,7 @@ def translate_time_s(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time / 3.154e+7
     else: return time
 
-def translate_time_m(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_m(time: float, unit: TimeUnit) -> float:
     """Translate minutes to other unit."""
     if unit == NANOSECOND: return time * 3.6e+12
     elif unit == MICROSECOND: return time * 6e+7
@@ -73,7 +73,7 @@ def translate_time_m(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time / 525600
     else: return time
 
-def translate_time_h(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_h(time: float, unit: TimeUnit) -> float:
     """Translate hour to other unit."""
     if unit == NANOSECOND: return time * 3.6e+12
     elif unit == MICROSECOND: return time * 3.6e+9
@@ -87,7 +87,7 @@ def translate_time_h(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time / 8760
     else: return time
 
-def translate_time_d(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_d(time: float, unit: TimeUnit) -> float:
     """Translate day to other unit."""
     if unit == NANOSECOND: return time * 8.64e+13
     elif unit == MICROSECOND: return time * 8.64e+10
@@ -101,7 +101,7 @@ def translate_time_d(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time / 365
     else: return time
 
-def translate_time_w(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_w(time: float, unit: TimeUnit) -> float:
     """Translate week to other unit."""
     if unit == NANOSECOND: return time * 6.048e+14
     elif unit == MICROSECOND: return time * 6.048e+11
@@ -115,7 +115,7 @@ def translate_time_w(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time / 52.143
     else: return time
 
-def translate_time_mo(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_mo(time: float, unit: TimeUnit) -> float:
     """Translate month to other unit."""
     if unit == NANOSECOND: return time * 2.628e+15
     elif unit == MICROSECOND: return time * 2.628e+12
@@ -129,7 +129,7 @@ def translate_time_mo(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time / 12
     else: return time
 
-def translate_time_y(time: float, unit: TimeUnit) -> Union[int, float]:
+def translate_time_y(time: float, unit: TimeUnit) -> float:
     """Translate year to other unit."""
     if unit == NANOSECOND: return time * 3.154e+16
     elif unit == MICROSECOND: return time * 3.154e+13
@@ -143,7 +143,7 @@ def translate_time_y(time: float, unit: TimeUnit) -> Union[int, float]:
     elif unit == YEAR: return time
     else: return time
 
-def translate_time(time: float, time_unit: TimeUnit, convert_to: TimeUnit) -> Union[int, float]:
+def translate_time(time: float, time_unit: TimeUnit, convert_to: TimeUnit) -> float:
     """Translate one unit to another."""
     if time_unit == convert_to: return time
     elif time_unit == NANOSECOND: return translate_time_ns(time, convert_to)
