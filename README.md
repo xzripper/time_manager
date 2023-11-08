@@ -73,6 +73,9 @@ time_thread(
     False # Once?
  )
 )
+
+# Do some things while blocked.
+time_thread(do_while_blocked(lambda: print('Blocked!'), lambda: wait(3)))
 ```
 
 Adds more than 15 functions to improve work with time, and a lot more things.
