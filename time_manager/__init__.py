@@ -2,7 +2,7 @@
 
 from time import sleep, perf_counter, perf_counter_ns, timezone as _timezone
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from pytz import timezone as _get_timezone
 
@@ -11,7 +11,7 @@ from threading import Thread
 from typing import Union, Callable
 
 
-TM_VERSION = 1.7
+TM_VERSION = 1.8
 
 TimeUnit = int
 
@@ -100,7 +100,7 @@ def blocking_time_thread(time_process: TimeProcess, daemon: bool=False, thread: 
 
         threads[thread].append(thread_o)
 
-def do_process(time_process: TimeProcess) -> None:
+def non_threaded(time_process: TimeProcess) -> None:
     """Run time process without thread."""
     time_process()
 
@@ -179,6 +179,24 @@ def do_every(callable: Callable, delay: AdvancedDelayOrSimpleDelay, once: bool=F
 
     return process
 
+def do_before_after(before: Callable, callable: Callable, after: Callable, before_delay: AdvancedDelayOrSimpleDelay=0, after_delay: AdvancedDelayOrSimpleDelay=0) -> TimeProcess:
+    """Do `before` before, wait `before_delay`, call `callable`, wait `after_delay`, after do `after`."""
+    return lambda: [time_thread(before, True), wait(Delay.get(before_delay)), callable(), wait(Delay.get(after_delay)), time_thread(after)]
+
+def do_while_blocked(callable: Callable, blocking: Callable, callable_delay: AdvancedDelayOrSimpleDelay=0) -> TimeProcess:
+    """Call callable every step, while blocked."""
+    def process():
+        blocking_thread = Thread(target=blocking)
+
+        blocking_thread.start()
+
+        while blocking_thread.is_alive():
+            callable()
+
+            wait(Delay.get(callable_delay))
+
+    return process
+
 def code_exec_time(callable: Callable, ns: bool=False) -> float:
     """Get code execution time."""
     if ns:
@@ -197,7 +215,7 @@ def code_exec_time(callable: Callable, ns: bool=False) -> float:
 
 def utc(ms: bool=False) -> int:
     """Get UTC."""
-    return int(datetime.now(getattr(__import__('datetime'), 'timezone').utc).timestamp() * (1000 if ms else 1))
+    return int(datetime.now(timezone.utc).timestamp() * (1000 if ms else 1))
 
 def now(timezone: str=None) -> datetime:
     """Get current date and time (datetime)."""
